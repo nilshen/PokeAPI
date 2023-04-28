@@ -4,9 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.net.URI;
@@ -14,24 +12,29 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 //
 @RestController
 public class PokemonDataController {
 
-    @GetMapping("/pokemondata/{name}")
+    //endpoint: http://localhost:8000/pokemondata/{name}
+    @PostMapping("/pokemondata")
     public ArrayList<String> retrievePokemonData(
-            @PathVariable String name) throws IOException, InterruptedException {
-
-        HttpClient client = HttpClient.newHttpClient();
+//            @PathVariable String name
+            @RequestBody String name) throws IOException, InterruptedException {
+        //re-route: additional API call to get Pokemon details
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("https://pokeapi.co/api/v2/pokemon/"+name))
                 .header("content-Type", "application/json")
                 .build();
 
+        HttpClient client = HttpClient.newHttpClient();
+
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());;
         String jsonString = response.body();
+
 
         Gson gson = new Gson();
         JsonObject jsonObject = gson.fromJson(jsonString, JsonObject.class);
@@ -45,6 +48,10 @@ public class PokemonDataController {
             String url = abilityObject.getAsJsonObject("ability").get("url").getAsString();
             System.out.println(url);
             urlList.add(url);
+        }
+
+        return urlList;
+
 //            HttpRequest requestAbility = HttpRequest.newBuilder()
 //                    .uri(URI.create(url))
 //                    .header("content-Type", "application/json")
@@ -54,11 +61,9 @@ public class PokemonDataController {
 //            HttpResponse<String> responseAbility = client.send(request, HttpResponse.BodyHandlers.ofString());;
 //
 //            System.out.println(responseAbility.body());
-        }
 
-        return urlList;
+
 //        System.out.println(jsonObject.getClass());
-
 
 //        Pokemon pokemon = new Pokemon();
 //        Gson gson = new Gson();
