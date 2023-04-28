@@ -1,16 +1,21 @@
 package com.PokeAPI.PokeAPI;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
 
 
 //
@@ -37,19 +42,22 @@ public class PokemonDataController {
         Integer height = pokemon.getHeight();
         ArrayList abilities = pokemon.getAbilities();
 
-        ArrayList<Integer> pokeArr = new ArrayList<Integer>();
-        pokeArr.add(weight);
-        pokeArr.add(height);
+        HashMap<String, Integer> pokeArr = new HashMap<String, Integer>();
+        pokeArr.put("Weight", weight);
+        pokeArr.put("Height", height);
 
-        System.out.println(abilities.get(0));
+        System.out.println(name + "'s height is " + height + ", weight is " + weight + ".");
+
+//        for (int i = 0; i < abilities.size(); i++) {
+//            Ability ability = (Ability) abilities.get(0);
+//            String url = ability.getAbility().getUrl();
+
+//            System.out.println(ability);
+//            System.out.println(url);
+
+//        }
 
 
-//        return pokeArr;
-//        System.out.println(name);
-//        System.out.println(request);
-//        System.out.println(response.body());
-//        System.out.println(responseBody);
-//        System.out.println(new ResponseBody.getAbilities());
 
 
     }

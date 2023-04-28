@@ -1,6 +1,7 @@
 package com.PokeAPI.PokeAPI;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Pokemon {
     private Integer weight;
@@ -16,23 +17,14 @@ public class Pokemon {
         return height;
     }
 
-    public void setHeight(Integer height) {
-        this.height = height;
-    }
 
     public Integer getWeight() {
         return weight;
     }
 
-    public void setWeight(Integer weight) {
-        this.weight = weight;
-    }
 
     public ArrayList getAbilities() {
         return abilities;
     }
 
-    public void setAbilities(ArrayList abilities) {
-        this.abilities = abilities;
-    }
 }
