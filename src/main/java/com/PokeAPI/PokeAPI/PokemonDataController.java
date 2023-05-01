@@ -1,64 +1,61 @@
 package com.PokeAPI.PokeAPI;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.util.ArrayList;
+
 
 
 //
 @RestController
 public class PokemonDataController {
 
+    private PokemonService pokemonService;
+    private BerryService berryService;
+
+//    @Autowired
+//    public PokemonDataController(PokemonService pokemonService, BerryService berryService) {
+//        this.pokemonService = pokemonService;
+//        this.berryService = berryService;
+//    }
+
     //endpoint: http://localhost:8000/pokemondata/{name}
     @PostMapping("/pokemondata")
     public String retrievePokemonData(
 //            @PathVariable String name
-            @RequestBody String name) throws IOException, InterruptedException {
+            @RequestHeader String name,
+            @RequestHeader int id) throws IOException, InterruptedException {
         //re-route: additional API call to get Pokemon details
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://pokeapi.co/api/v2/pokemon/"+name))
-                .header("content-Type", "application/json")
-                .build();
 
-        HttpClient client = HttpClient.newHttpClient();
+        PokemonService pokemonService = new PokemonService();
+        BerryService berryService = new BerryService();
 
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());;
-        String jsonString = response.body();
+        JsonObject listPokemon = pokemonService.pokemonService(name);
+        JsonObject listBerry =   berryService.berryService(id);
 
+        JsonObject mergedJsonObject = mergeJsonObjects(listPokemon, listBerry);
 
+        // Convert the JSON object to a JSON string
+        String pokeString = new Gson().toJson(mergedJsonObject);
 
-        Gson gson = new Gson();
-        JsonObject jsonObject = gson.fromJson(jsonString, JsonObject.class);
+        return pokeString;
 
-        int weight = jsonObject.get("weight").getAsInt();
-        int height = jsonObject.get("height").getAsInt();
+    }
 
-        JsonArray abilitiesArray = jsonObject.getAsJsonArray("abilities");
+    public static JsonObject mergeJsonObjects(JsonObject jsonObject1, JsonObject jsonObject2) {
+        JsonObject mergedJsonObject = new JsonObject();
 
-        ArrayList<String> abilityNameList = new ArrayList<String>();
-
-        for (JsonElement abilityElement : abilitiesArray) {
-            JsonObject abilityObject = abilityElement.getAsJsonObject();
-            String abilityName = abilityObject.getAsJsonObject("ability").get("name").getAsString();
-            abilityNameList.add(abilityName);
+        // Copy key-value pairs from the first JsonObject
+        for (String key : jsonObject1.keySet()) {
+            mergedJsonObject.add(key, jsonObject1.get(key));
         }
 
+        // Copy key-value pairs from the second JsonObject
+        for (String key : jsonObject2.keySet()) {
+            mergedJsonObject.add(key, jsonObject2.get(key));
+        }
 
-        Pokemon pokemon = new Pokemon();
-        pokemon.setHeight(height);
-        pokemon.setWeight(weight);
-        pokemon.setName(name);
-        pokemon.setAbilities(abilityNameList);
-
-        return "Hello, my name is " + pokemon.getName() + ". My weight is " + pokemon.getWeight() + ". My Height is " + pokemon.getHeight() +
-                ". And my abilities are " +pokemon.getAbilities() + ".";
+        return mergedJsonObject;
     }
 }
