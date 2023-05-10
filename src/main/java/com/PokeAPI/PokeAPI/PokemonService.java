@@ -4,7 +4,11 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
+import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -12,10 +16,14 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 
+@Component
 public class PokemonService {
+
+
         private String name;
 
-        public JsonObject pokemonService (String name) throws IOException, InterruptedException {
+
+        public JsonObject pokemonApi(String name) throws IOException, InterruptedException {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create("https://pokeapi.co/api/v2/pokemon/"+name))
                     .header("content-Type", "application/json")
@@ -25,7 +33,6 @@ public class PokemonService {
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());;
             String jsonString = response.body();
-
 
 
             Gson gson = new Gson();
